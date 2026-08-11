@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    /* 색상 팔레트 (★ 토글 켜졌을 때 색은 --toggle-on 에서 바꾸세요) */
+    :root {
+      --card: #faf8f6;
+      --dark: #26232a;
+      --dark-hover: #3a3540;
+      --toggle-on: #26232a;   /* ★ 토글 켜진 색 */
+      --toggle-off: #dcd7d2;
+      --text: #26232a;
+      --muted: #8d8681;
+      --caption: #a49d99;
+      --divider: #eeeae6;
+      --preview-bg: #f1ede9;
+      --preview-dash: #d9d3cd;
+      --border: #e4dfda;
+      --range-track: #ddd8d3;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 320px;
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 카드 = 창 전체 (모서리 각짐 → 뒤 흰색 안 보임) */
+    .card {
+      width: 100%;
+      background: var(--card);
+      overflow: hidden;
+    }
+
+    /* 헤더 */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px 14px;
+    }
+    .title { display: flex; align-items: baseline; gap: 7px; }
+    .title .logo { font-size: 15px; font-weight: 700; letter-spacing: -.01em; color: var(--text); }
+    .title .sub { font-size: 10.5px; color: var(--caption); letter-spacing: .02em; }
+    .divider { height: 1px; background: var(--divider); }
+
+    /* 토글 */
+    .switch { position: relative; width: 38px; height: 22px; flex: none; cursor: pointer; }
+    .switch input { display: none; }
+    .switch .track {
+      position: absolute; inset: 0; border-radius: 99px;
+      background: var(--toggle-off); transition: background .18s ease;
+    }
+    .switch .knob {
+      position: absolute; left: 2px; top: 2px; width: 18px; height: 18px;
+      border-radius: 99px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25);
+      transition: transform .18s cubic-bezier(.4,1.3,.5,1);
+    }
+    .switch input:checked ~ .track { background: var(--toggle-on); }
+    .switch input:checked ~ .knob { transform: translateX(16px); }
+
+    /* 본문 */
+    .body { padding: 18px; display: flex; flex-direction: column; gap: 16px; transition: opacity .18s ease; }
+    .body.off { opacity: .38; pointer-events: none; }
+
+    /* 이미지 줄 */
+    .img-row { display: flex; gap: 14px; align-items: center; }
+    .preview {
+      width: 84px; height: 84px; flex: none; border-radius: 14px;
+      background: var(--preview-bg); border: 1px dashed var(--preview-dash);
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .preview img { display: block; }
+    .btn-col { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
+    .btn-file {
+      width: 100%; padding: 9px 0; border: 0; border-radius: 10px;
+      background: var(--dark); color: #fdfcfb; font-family: inherit;
+      font-size: 12.5px; font-weight: 600; letter-spacing: -.01em; cursor: pointer; text-align: center;
+    }
+    .btn-file:hover { background: var(--dark-hover); }
+    .btn-outline {
+      width: 100%; padding: 8px 0; border: 1px solid var(--border); border-radius: 10px;
+      background: transparent; color: var(--muted); font-family: inherit;
+      font-size: 11.5px; letter-spacing: -.01em; cursor: pointer;
+    }
+    .btn-outline:hover { color: var(--text); border-color: #cdc6bf; }
+    #fileInput { display: none; }
+
+    /* 크기 줄 (라벨 - 슬라이더 - 값) */
+    .size-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .size-row .t { font-size: 11.5px; color: var(--muted); letter-spacing: .01em; flex: none; }
+    .size-row .v { font-size: 11.5px; color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; flex: none; width: 34px; text-align: right; }
+    input[type="range"] {
+      -webkit-appearance: none; appearance: none; flex: 1; height: 14px; background: transparent;
+    }
+    input[type="range"]::-webkit-slider-runnable-track { height: 3px; border-radius: 99px; background: var(--range-track); }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5.5px; border-radius: 99px;
+      background: var(--dark); border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.28); cursor: grab;
+    }
+
+    /* 색상 사각형 */
+    .sv-square {
+      position: relative; height: 120px; border-radius: 12px; cursor: crosshair; overflow: hidden; touch-action: none;
+    }
+    .sv-handle {
+      position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 99px;
+      border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.25), 0 1px 4px rgba(0,0,0,.3); pointer-events: none;
+    }
+    .hue-bar {
+      position: relative; height: 12px; border-radius: 99px; cursor: pointer; touch-action: none;
+      background: linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);
+    }
+    .hue-handle {
+      position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 99px;
+      background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.35); pointer-events: none;
+    }
+    /* 색 아래 줄 */
+    .color-bottom { display: flex; align-items: center; gap: 10px; }
+    .swatch-current { width: 26px; height: 26px; border-radius: 8px; flex: none; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+    .hex-input {
+      width: 90px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12.5px; color: var(--text); letter-spacing: .04em; text-transform: uppercase;
+      border: 1px solid var(--border); border-radius: 8px; padding: 5px 8px; background: #fff;
+    }
+    .spacer { flex: 1; }
+    .swatch-tools { display: flex; align-items: center; gap: 7px; }
+    .add-btn {
+      width: 20px; height: 20px; border: 0; padding: 0; border-radius: 99px; cursor: pointer;
+      background: var(--dark); color: #fdfcfb; font-family: inherit; font-size: 13px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .add-btn:hover { background: var(--dark-hover); }
+    .swatch-list { display: flex; gap: 5px; }
+    .swatch { width: 18px; height: 18px; padding: 0; border-radius: 99px; cursor: pointer; border: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+    .swatch.base { box-shadow: inset 0 0 0 1px rgba(0,0,0,.12), 0 0 0 2px var(--card), 0 0 0 3px #e3ded9; }
+    .swatch.empty { border: 1px dashed #cdc6bf; background: transparent !important; box-shadow: none; cursor: default; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="title"><span class="logo">luv-byte</span><span class="sub">v.10</span></div>
+      <label class="switch">
+        <input type="checkbox" id="enabledToggle" checked>
+        <span class="track"></span><span class="knob"></span>
+      </label>
+    </div>
+    <div class="divider"></div>
+
+    <div class="body" id="body">
+      <!-- 이미지 -->
+      <div class="img-row">
+        <div class="preview"><img id="preview" src="images/pop.png" alt=""></div>
+        <div class="btn-col">
+          <label for="fileInput" class="btn-file">파일 선택</label>
+          <button class="btn-outline" id="resetBtn">기본 박쥐로 되돌리기</button>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*">
+
+      <!-- 크기 -->
+      <div class="size-row">
+        <span class="t">크기</span>
+        <input type="range" id="sizeSlider" min="16" max="96" value="45">
+        <span class="v" id="sizeValue">45px</span>
+      </div>
+
+      <!-- 색상 -->
+      <div class="sv-square" id="svSquare"><div class="sv-handle" id="svHandle"></div></div>
+      <div class="hue-bar" id="hueBar"><div class="hue-handle" id="hueHandle"></div></div>
+      <div class="color-bottom">
+        <div class="swatch-current" id="swatch"></div>
+        <input class="hex-input" id="hexInput" maxlength="7" value="#1D9BF0">
+        <div class="spacer"></div>
+        <div class="swatch-tools">
+          <button class="add-btn" id="addBtn" title="현재 색 저장">+</button>
+          <div class="swatch-list" id="swatchRow"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

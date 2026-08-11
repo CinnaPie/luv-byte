@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "luv-byte",
+  "version": "1.0",
+  "description": "트위터 마음 이미지를 바꿔주는 확장 프로그램",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://twitter.com/*",
+        "https://x.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["images/*"],
+      "matches": [
+        "https://twitter.com/*",
+        "https://x.com/*"
+      ]
+    }
+  ]
+}
