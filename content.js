@@ -29,10 +29,10 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (changes.enabled || changes.buttonColor) applyButtonColor();
 });
 
-// X 색상 바꾸기
+// X 강조색 변경
 function applyButtonColor() {
   let style = document.getElementById("luvbyte-btn-color");
-  // 꺼져 있으면 색 규칙 제거 (원래 트위터 색으로)
+  // 꺼져 있으면 색 규칙 제거
   if (!enabled) {
     if (style) style.remove();
     return;
@@ -56,13 +56,33 @@ function applyButtonColor() {
     [style*="color: ${TWITTER_BLUE}"] { color: ${c} !important; }
     [style*="border-color: ${TWITTER_BLUE}"] { border-color: ${c} !important; }
 
+    /* SVG 아이콘의 파란 채우기/선 (글자수 카운터 등) */
+    [style*="fill: ${TWITTER_BLUE}"] { fill: ${c} !important; }
+    [style*="stroke: ${TWITTER_BLUE}"] { stroke: ${c} !important; }
+
+    /* 인증 뱃지 (닉네임 옆 파란 체크) */
+    svg[data-testid="icon-verified"] {
+      color: ${c} !important;
+      fill: ${c} !important;
+    }
+    svg[data-testid="icon-verified"] path {
+      fill: ${c} !important;
+    }
+
+    /* 글자 수 카운터 링 (게시 버튼 옆 진행률 원) */
+    [role="progressbar"] svg circle {
+      stroke: ${c} !important;
+    }
+
+    /* 사이드바 알림 개수 뱃지 (안 읽은 알림 "1" 동그라미)
+       aria-label="안 읽은 항목 N개" 표식으로 잡아, 색과 무관하게 덮어씀 */
     [aria-label*="안 읽은 항목"] {
       background-color: ${c} !important;
     }
   `;
 }
 
-// 지정된 이미지로 하트 대체
+// ===== 마음 이미지 팡! =====
 function injectStyleOnce() {
   if (document.getElementById("heart-pop-style")) return;
   const style = document.createElement("style");
