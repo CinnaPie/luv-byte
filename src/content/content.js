@@ -84,6 +84,14 @@ function applyButtonColor() {
     [aria-label*="안 읽은 항목"] {
       background-color: ${color} !important;
     }
+    
+    svg[data-testid="icon-verified"] {
+      color: ${color} !important;
+      fill: ${color} !important;
+    }
+    svg[data-testid="icon-verified"] path {
+      fill: ${color} !important;
+    }
   `;
 }
 
