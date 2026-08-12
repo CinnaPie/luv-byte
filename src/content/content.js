@@ -92,6 +92,20 @@ function applyButtonColor() {
     svg[data-testid="icon-verified"] path {
       fill: ${color} !important;
     }
+    /* 새(안 읽은) 알림만 옅은 색 → 읽으면 자동으로 원래 색 복귀
+       r-1peqgm7 = 트위터가 새 알림에만 붙이는 옅은 배경 클래스 */
+    article[data-testid="notification"].r-1peqgm7 {
+      background-color: ${color}1a !important;
+    }
+
+    /* 알림창 하트 (분홍 → 내 색으로) */
+    article[data-testid="notification"] svg {
+      color: ${color} !important;
+      fill: ${color} !important;
+    }
+    article[data-testid="notification"] svg path {
+      fill: ${color} !important;
+    }
   `;
 }
 
