@@ -13,6 +13,7 @@ function init() {
   loadSettings();
   bindStorageListener();
   bindClickHandler();
+  startBlueRecolor();
 }
 
 function loadSettings() {
@@ -89,6 +90,12 @@ function applyButtonColor() {
       color: ${color} !important;
       fill: ${color} !important;
     }
+
+    /* "게시물을 전송했습니다" 파란 토스트 알림 */
+    [data-testid="toast"] {
+      background-color: ${color} !important;
+    }
+    
     svg[data-testid="icon-verified"] path {
       fill: ${color} !important;
     }
@@ -139,6 +146,89 @@ function showPop(x, y) {
   img.style.width = state.popSize + "px";
   document.body.appendChild(img);
   setTimeout(() => img.remove(), 1000);
+}
+
+// =========================================================
+//  트위터 파란색(rgb(29, 155, 240)) 자동 색 변경
+//  · 표식 없이 클래스로만 칠해진 파란 요소까지 잡음
+//  · 이미지/영상은 제외
+//  · CSS 규칙(applyButtonColor)이 못 잡는 것들을 보완
+// =========================================================
+const recolored = new Map(); // 우리가 바꾼 요소 → 바꾼 속성들 기억
+
+// 요소 하나 검사: 트위터 파랑이면 내 색으로
+function recolorEl(el) {
+  if (!el || el.nodeType !== 1) return;
+  const tag = el.tagName;
+  if (tag === "IMG" || tag === "VIDEO" || tag === "CANVAS") return; // 이미지류 제외
+
+  const cs = getComputedStyle(el);
+  const checks = [
+    ["color", cs.color],
+    ["background-color", cs.backgroundColor],
+    ["fill", cs.fill],
+    ["stroke", cs.stroke],
+    ["border-color", cs.borderColor]
+  ];
+  for (const [prop, value] of checks) {
+    if (value === TWITTER_BLUE) {
+      el.style.setProperty(prop, state.buttonColor, "important");
+      let props = recolored.get(el);
+      if (!props) { props = new Set(); recolored.set(el, props); }
+      props.add(prop);
+    }
+  }
+}
+
+// 특정 영역 전체 훑기
+function scanBlue(root) {
+  if (!state.enabled || !root || root.nodeType !== 1) return;
+  recolorEl(root);
+  const all = root.querySelectorAll("*");
+  for (let i = 0; i < all.length; i++) recolorEl(all[i]);
+}
+
+// 색이 바뀌면 이미 바꾼 것들도 새 색으로 갱신
+function reapplyBlue() {
+  for (const [el, props] of recolored) {
+    if (!el.isConnected) { recolored.delete(el); continue; }
+    for (const p of props) el.style.setProperty(p, state.buttonColor, "important");
+  }
+}
+
+// 끄면 원래 색으로 복구
+function revertBlue() {
+  for (const [el, props] of recolored) {
+    for (const p of props) el.style.removeProperty(p);
+  }
+  recolored.clear();
+}
+
+function startBlueRecolor() {
+  // 색/켜짐 상태 변화 감지
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== "local") return;
+    if (changes.buttonColor && state.enabled) reapplyBlue();
+    if (changes.enabled) {
+      if (changes.enabled.newValue !== false) scanBlue(document.body);
+      else revertBlue();
+    }
+  });
+
+  // 화면이 바뀔 때(스크롤·새 글 등) 새로 나타난 부분만 검사 → 가벼움
+  const observer = new MutationObserver((muts) => {
+    if (!state.enabled) return;
+    for (const m of muts) {
+      for (const node of m.addedNodes) scanBlue(node);
+    }
+  });
+
+  function begin() {
+    observer.observe(document.body, { childList: true, subtree: true });
+    scanBlue(document.body); // 처음 한 번 전체 검사
+  }
+  if (document.body) begin();
+  else document.addEventListener("DOMContentLoaded", begin);
 }
 
 init();
