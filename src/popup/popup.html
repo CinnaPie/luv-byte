@@ -8,12 +8,12 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    /* 색상 팔레트 (★ 토글 켜졌을 때 색은 --toggle-on 에서 바꾸세요) */
+    /* color palette */
     :root {
       --card: #faf8f6;
       --dark: #26232a;
       --dark-hover: #3a3540;
-      --toggle-on: #26232a;   /* ★ 토글 켜진 색 */
+      --toggle-on: #26232a;   /* toggle on color */
       --toggle-off: #dcd7d2;
       --text: #26232a;
       --muted: #8d8681;
@@ -32,14 +32,14 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* 카드 = 창 전체 (모서리 각짐 → 뒤 흰색 안 보임) */
+    /* card container */
     .card {
       width: 100%;
       background: var(--card);
       overflow: hidden;
     }
 
-    /* 헤더 */
+    /* header */
     .header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 16px 18px 14px;
@@ -49,7 +49,7 @@
     .title .sub { font-size: 10.5px; color: var(--caption); letter-spacing: .02em; }
     .divider { height: 1px; background: var(--divider); }
 
-    /* 토글 */
+    /* toggle switch */
     .switch { position: relative; width: 38px; height: 22px; flex: none; cursor: pointer; }
     .switch input { display: none; }
     .switch .track {
@@ -64,11 +64,11 @@
     .switch input:checked ~ .track { background: var(--toggle-on); }
     .switch input:checked ~ .knob { transform: translateX(16px); }
 
-    /* 본문 */
+    /* body */
     .body { padding: 18px; display: flex; flex-direction: column; gap: 16px; transition: opacity .18s ease; }
     .body.off { opacity: .38; pointer-events: none; }
 
-    /* 이미지 줄 */
+    /* image row */
     .img-row { display: flex; gap: 14px; align-items: center; }
     .preview {
       width: 84px; height: 84px; flex: none; border-radius: 14px;
@@ -91,7 +91,7 @@
     .btn-outline:hover { color: var(--text); border-color: #cdc6bf; }
     #fileInput { display: none; }
 
-    /* 크기 줄 (라벨 - 슬라이더 - 값) */
+    /* size row */
     .size-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
     .size-row .t { font-size: 11.5px; color: var(--muted); letter-spacing: .01em; flex: none; }
     .size-row .v { font-size: 11.5px; color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; flex: none; width: 34px; text-align: right; }
@@ -104,7 +104,7 @@
       background: var(--dark); border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.28); cursor: grab;
     }
 
-    /* 색상 사각형 */
+    /* color picker */
     .sv-square {
       position: relative; height: 120px; border-radius: 12px; cursor: crosshair; overflow: hidden; touch-action: none;
     }
@@ -120,7 +120,7 @@
       position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 99px;
       background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.35); pointer-events: none;
     }
-    /* 색 아래 줄 */
+    /* color footer row */
     .color-bottom { display: flex; align-items: center; gap: 10px; }
     .swatch-current { width: 26px; height: 26px; border-radius: 8px; flex: none; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
     .hex-input {
@@ -154,7 +154,7 @@
     <div class="divider"></div>
 
     <div class="body" id="body">
-      <!-- 이미지 -->
+      <!-- image -->
       <div class="img-row">
         <div class="preview"><img id="preview" src="../../assets/images/pop.png" alt=""></div>
         <div class="btn-col">
@@ -164,14 +164,14 @@
       </div>
       <input type="file" id="fileInput" accept="image/*">
 
-      <!-- 크기 -->
+      <!-- size -->
       <div class="size-row">
         <span class="t">크기</span>
         <input type="range" id="sizeSlider" min="16" max="96" value="45">
         <span class="v" id="sizeValue">45px</span>
       </div>
 
-      <!-- 색상 -->
+      <!-- color -->
       <div class="sv-square" id="svSquare"><div class="sv-handle" id="svHandle"></div></div>
       <div class="hue-bar" id="hueBar"><div class="hue-handle" id="hueHandle"></div></div>
       <div class="color-bottom">
