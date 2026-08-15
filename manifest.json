@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "luv-byte",
   "version": "1.0",
-  "description": "트위터 마음 이미지를 바꿔주는 확장 프로그램",
+  "description": "X(트위터) likes 이미지를 커스텀하는 비공식 확장 프로그램",
   "permissions": ["storage"],
   "content_scripts": [
     {

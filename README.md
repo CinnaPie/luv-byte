@@ -42,4 +42,12 @@ X에서 마음을 누르면 지정한 이미지가 하트 위에서 튀어나오
 
 - Manifest V3 기반
 - 별도의 외부 라이브러리 없이 순수 JavaScript로 작성
-- 개발 중 어려운 부분은 인공지능의 도움을 일부 받았습니다.
+- 개발 중 어려운 부분은 인공지능의 도움을 받았습니다.
+
+<br>
+
+## 📄 License & Credits
+
+Developed by **CinnaPie** ([@CinnaPie](https://github.com/CinnaPie)) & **xxxx** ([@xxmerrywish](https://twitter.com/xxmerrywish))
+
+This project is open-source and licensed under the [MIT License](./LICENSE).

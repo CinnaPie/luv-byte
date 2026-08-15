@@ -1,3 +1,9 @@
+/*!
+ * luv-byte - Custom Heart Image for X (Twitter)
+ * Copyright (c) 2026 CinnaPie (@CinnaPie), xxxx (@xxmerrywish)
+ * Released under the MIT License.
+ */
+
 const DEFAULT_IMAGE = chrome.runtime.getURL("assets/images/pop.png");
 const DEFAULT_SIZE = 45;
 const DEFAULT_COLOR = "#1d9bf0";
